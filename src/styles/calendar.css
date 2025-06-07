@@ -1,0 +1,49 @@
+/* FullCalendar Custom Styles */
+.fc {
+  @apply font-sans;
+}
+
+.fc-button {
+  @apply bg-indigo-600 hover:bg-indigo-700 border-indigo-600 text-white font-medium;
+}
+
+.fc-button:disabled {
+  @apply opacity-50 cursor-not-allowed;
+}
+
+.fc-toolbar-title {
+  @apply text-lg font-semibold text-gray-900;
+}
+
+.fc-daygrid-day-number {
+  @apply text-sm text-gray-700;
+}
+
+.fc-daygrid-day.fc-day-today {
+  @apply bg-indigo-50;
+}
+
+.fc-event {
+  @apply cursor-pointer transition-opacity hover:opacity-80;
+}
+
+.fc-daygrid-event {
+  @apply text-xs;
+}
+
+/* Calendar Widget Specific */
+.calendar-widget .fc-toolbar {
+  @apply mb-4;
+}
+
+.calendar-widget .fc-button {
+  @apply px-2 py-1 text-xs;
+}
+
+.calendar-widget .fc-toolbar-title {
+  @apply text-base;
+}
+
+.calendar-widget .fc-daygrid-day-number {
+  @apply text-xs;
+}
