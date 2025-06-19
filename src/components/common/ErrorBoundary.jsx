@@ -13,10 +13,30 @@ class ErrorBoundary extends React.Component {
 
   componentDidCatch(error, errorInfo) {
     console.error('Error caught by boundary:', error, errorInfo);
+  
+
+  if (error.message && error.message.includes('subscribe')) {
+      console.warn('Subscription error detected. Check for:');
+      console.warn('1. Multiple useEffect hooks subscribing to same channel');
+      console.warn('2. Missing cleanup in useEffect dependencies');
+      console.warn('3. Component remounting without proper unsubscription');
+    }
+
+    this.setState({ errorInfo });
   }
+
+  handleRetry = () => {
+    this.setState(prevState => ({
+      hasError: false,
+      error: null,
+      errorInfo: null,
+      retryCount: prevState.retryCount + 1
+    }));
+  };
 
   render() {
     if (this.state.hasError) {
+      const isSubscriptionError = this.state.error?.message?.includes('subscribe');
       return (
         <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
           <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 text-center">

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
+import {
   CalendarDaysIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -65,7 +65,7 @@ export default function RevolutionaryCalendar() {
   const navigate = useNavigate();
   const { user, profile } = useAuthStore();
   const { events, loading } = useEvents();
-  
+
   // State - MUST be declared before any returns
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(null);
@@ -83,12 +83,12 @@ export default function RevolutionaryCalendar() {
   const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
   const [collaborators, setCollaborators] = useState([]);
   const [weather, setWeather] = useState({});
-  
+
   // Refs
   const calendarRef = useRef(null);
   const isDragging = useRef(false);
   const dragStart = useRef({ x: 0, y: 0 });
-  
+
   // Show loading state while fetching events
   if (loading) {
     return (
@@ -103,7 +103,7 @@ export default function RevolutionaryCalendar() {
       </div>
     );
   }
-  
+
   // Log events to verify data is being fetched
   console.log('Calendar loaded with events:', events.length, 'events');
   if (events.length > 0) {
@@ -118,7 +118,7 @@ export default function RevolutionaryCalendar() {
       start: startOfMonth(currentDate),
       end: endOfMonth(currentDate)
     });
-    
+
     days.forEach(day => {
       const rand = Math.random();
       weatherData[format(day, 'yyyy-MM-dd')] = {
@@ -127,7 +127,7 @@ export default function RevolutionaryCalendar() {
         icon: rand > 0.7 ? '🌧️' : rand > 0.4 ? '☁️' : '☀️'
       };
     });
-    
+
     setWeather(weatherData);
   }, [currentDate]);
 
@@ -138,7 +138,7 @@ export default function RevolutionaryCalendar() {
       if (filterCategory !== 'all' && event.event_type !== filterCategory) {
         return false;
       }
-      
+
       // Search filter
       if (searchQuery) {
         const query = searchQuery.toLowerCase();
@@ -146,14 +146,14 @@ export default function RevolutionaryCalendar() {
                event.description?.toLowerCase().includes(query) ||
                event.location?.toLowerCase().includes(query);
       }
-      
+
       return true;
     });
   };
 
   // Get events for a specific date
   const getEventsForDate = (date) => {
-    return getFilteredEvents().filter(event => 
+    return getFilteredEvents().filter(event =>
       isSameDay(new Date(event.start_time), date)
     );
   };
@@ -168,20 +168,20 @@ export default function RevolutionaryCalendar() {
   const getConflicts = (date) => {
     const dayEvents = getEventsForDate(date);
     const conflicts = [];
-    
+
     for (let i = 0; i < dayEvents.length; i++) {
       for (let j = i + 1; j < dayEvents.length; j++) {
         const start1 = new Date(dayEvents[i].start_time);
         const end1 = new Date(dayEvents[i].end_time);
         const start2 = new Date(dayEvents[j].start_time);
         const end2 = new Date(dayEvents[j].end_time);
-        
+
         if ((start1 <= start2 && end1 > start2) || (start2 <= start1 && end2 > start1)) {
           conflicts.push({ event1: dayEvents[i], event2: dayEvents[j] });
         }
       }
     }
-    
+
     return conflicts;
   };
 
@@ -212,15 +212,15 @@ export default function RevolutionaryCalendar() {
   // Handle 3D rotation
   const handle3DRotation = (e) => {
     if (!isDragging.current || viewMode !== '3D') return;
-    
+
     const deltaX = e.clientX - dragStart.current.x;
     const deltaY = e.clientY - dragStart.current.y;
-    
+
     setThreeDRotation({
       x: Math.max(-45, Math.min(45, threeDRotation.x + deltaY * 0.5)),
       y: threeDRotation.y + deltaX * 0.5
     });
-    
+
     dragStart.current = { x: e.clientX, y: e.clientY };
   };
 
@@ -233,7 +233,7 @@ export default function RevolutionaryCalendar() {
 
   // Render 3D Calendar View
   const render3DView = () => (
-    <div 
+    <div
       className="relative h-[600px] perspective-1000"
       onMouseDown={(e) => {
         isDragging.current = true;
@@ -243,7 +243,7 @@ export default function RevolutionaryCalendar() {
       onMouseUp={() => isDragging.current = false}
       onMouseLeave={() => isDragging.current = false}
     >
-      <div 
+      <div
         className="absolute inset-0 preserve-3d transition-transform duration-300 cursor-grab active:cursor-grabbing"
         style={{
           transform: `rotateX(${threeDRotation.x}deg) rotateY(${threeDRotation.y}deg) scale(${zoomLevel})`,
@@ -253,8 +253,8 @@ export default function RevolutionaryCalendar() {
         {/* Calendar Grid */}
         <div className="grid grid-cols-7 gap-2 p-8">
           {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day, i) => (
-            <div 
-              key={day} 
+            <div
+              key={day}
               className="text-center font-bold text-gray-700 mb-2"
               style={{
                 transform: `translateZ(${20 + i * 5}px)`
@@ -263,7 +263,7 @@ export default function RevolutionaryCalendar() {
               {day}
             </div>
           ))}
-          
+
           {monthDays().map((day, index) => {
             const dayEvents = getEventsForDate(day);
             const isCurrentMonth = isSameMonth(day, currentDate);
@@ -271,7 +271,7 @@ export default function RevolutionaryCalendar() {
             const intensity = getHeatIntensity(day);
             const conflicts = getConflicts(day);
             const weatherData = weather[format(day, 'yyyy-MM-dd')];
-            
+
             return (
               <div
                 key={day.toString()}
@@ -297,7 +297,7 @@ export default function RevolutionaryCalendar() {
                   }`}>
                     {format(day, 'd')}
                   </span>
-                  
+
                   {/* Weather Icon */}
                   {weatherData && (
                     <span className="text-xs" title={`${weatherData.temp}°F`}>
@@ -305,7 +305,7 @@ export default function RevolutionaryCalendar() {
                     </span>
                   )}
                 </div>
-                
+
                 {/* Event Indicators */}
                 <div className="space-y-1">
                   {dayEvents.slice(0, 3).map((event, i) => (
@@ -319,14 +319,14 @@ export default function RevolutionaryCalendar() {
                       }}
                     />
                   ))}
-                  
+
                   {dayEvents.length > 3 && (
                     <div className="text-xs text-gray-500 font-medium">
                       +{dayEvents.length - 3} more
                     </div>
                   )}
                 </div>
-                
+
                 {/* Conflict Indicator */}
                 {showConflicts && conflicts.length > 0 && (
                   <div className="absolute top-1 right-1">
@@ -337,10 +337,10 @@ export default function RevolutionaryCalendar() {
             );
           })}
         </div>
-        
+
         {/* Floating Event Preview */}
         {hoveredDate && getEventsForDate(hoveredDate).length > 0 && (
-          <div 
+          <div
             className="absolute bg-white rounded-xl shadow-2xl p-4 z-50 max-w-xs"
             style={{
               transform: 'translateZ(150px)',
@@ -380,9 +380,9 @@ export default function RevolutionaryCalendar() {
       start: startOfWeek(currentDate),
       end: endOfWeek(currentDate)
     });
-    
+
     const hours = Array.from({ length: 24 }, (_, i) => i);
-    
+
     return (
       <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
         <div className="grid grid-cols-8 border-b border-gray-200">
@@ -400,7 +400,7 @@ export default function RevolutionaryCalendar() {
             </div>
           ))}
         </div>
-        
+
         <div className="relative h-[600px] overflow-y-auto">
           {hours.map(hour => (
             <div key={hour} className="grid grid-cols-8 border-b border-gray-100">
@@ -412,9 +412,9 @@ export default function RevolutionaryCalendar() {
                   const eventDate = new Date(event.start_time);
                   return isSameDay(eventDate, day) && eventDate.getHours() === hour;
                 });
-                
+
                 return (
-                  <div 
+                  <div
                     key={`${day}-${hour}`}
                     className="relative p-2 border-l border-gray-100 hover:bg-gray-50 cursor-pointer"
                     onClick={() => {
@@ -460,7 +460,7 @@ export default function RevolutionaryCalendar() {
       start: startOfMonth(currentDate),
       end: endOfMonth(currentDate)
     });
-    
+
     // Group days into weeks
     days.forEach((day, index) => {
       currentWeek.push(day);
@@ -469,7 +469,7 @@ export default function RevolutionaryCalendar() {
         currentWeek = [];
       }
     });
-    
+
     return (
       <div className="bg-white rounded-2xl shadow-xl p-8">
         <div className="mb-6">
@@ -478,7 +478,7 @@ export default function RevolutionaryCalendar() {
             Visualize busy periods and plan events during quieter times
           </p>
         </div>
-        
+
         <div className="space-y-2">
           {/* Day labels */}
           <div className="grid grid-cols-7 gap-2 mb-2">
@@ -488,21 +488,21 @@ export default function RevolutionaryCalendar() {
               </div>
             ))}
           </div>
-          
+
           {/* Heatmap grid */}
           {weeks.map((week, weekIndex) => (
             <div key={weekIndex} className="grid grid-cols-7 gap-2">
               {week.map(day => {
                 const intensity = getHeatIntensity(day);
                 const dayEvents = getEventsForDate(day);
-                
+
                 return (
                   <div
                     key={day.toString()}
                     className="aspect-square rounded-lg border-2 border-gray-200 flex items-center justify-center cursor-pointer transition-all hover:scale-110"
                     style={{
-                      backgroundColor: intensity > 0 
-                        ? `rgba(99, 102, 241, ${intensity})` 
+                      backgroundColor: intensity > 0
+                        ? `rgba(99, 102, 241, ${intensity})`
                         : '#f3f4f6',
                       borderColor: isToday(day) ? '#4f46e5' : '#e5e7eb'
                     }}
@@ -520,7 +520,7 @@ export default function RevolutionaryCalendar() {
             </div>
           ))}
         </div>
-        
+
         {/* Legend */}
         <div className="mt-6 flex items-center gap-4">
           <span className="text-sm text-gray-600">Less busy</span>
@@ -543,19 +543,19 @@ export default function RevolutionaryCalendar() {
 
   // Render Year View
   const renderYearView = () => {
-    const months = Array.from({ length: 12 }, (_, i) => 
+    const months = Array.from({ length: 12 }, (_, i) =>
       new Date(currentDate.getFullYear(), i, 1)
     );
-    
+
     return (
       <div className="grid grid-cols-3 md:grid-cols-4 gap-6">
         {months.map(month => {
           const monthEvents = events.filter(event => {
             const eventDate = new Date(event.start_time);
-            return eventDate.getMonth() === month.getMonth() && 
+            return eventDate.getMonth() === month.getMonth() &&
                    eventDate.getFullYear() === month.getFullYear();
           });
-          
+
           return (
             <div
               key={month.toString()}
@@ -565,7 +565,7 @@ export default function RevolutionaryCalendar() {
               <h4 className="font-bold text-gray-900 mb-3">
                 {format(month, 'MMMM')}
               </h4>
-              
+
               {/* Mini calendar */}
               <div className="grid grid-cols-7 gap-1 text-xs">
                 {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map(day => (
@@ -573,13 +573,13 @@ export default function RevolutionaryCalendar() {
                     {day}
                   </div>
                 ))}
-                
+
                 {eachDayOfInterval({
                   start: startOfMonth(month),
                   end: endOfMonth(month)
                 }).map(day => {
                   const hasEvents = getEventsForDate(day).length > 0;
-                  
+
                   return (
                     <div
                       key={day.toString()}
@@ -592,7 +592,7 @@ export default function RevolutionaryCalendar() {
                   );
                 })}
               </div>
-              
+
               {/* Event count */}
               <div className="mt-3 flex items-center justify-between">
                 <span className="text-sm text-gray-600">
@@ -610,7 +610,7 @@ export default function RevolutionaryCalendar() {
   return (
     <div className={`min-h-screen ${isFullscreen ? 'fixed inset-0 z-50' : ''} bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50`}>
       {!isFullscreen && <Header />}
-      
+
       <div className={`${isFullscreen ? '' : 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-24'}`}>
         {/* Calendar Header */}
         <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg p-6 mb-6">
@@ -622,31 +622,31 @@ export default function RevolutionaryCalendar() {
               >
                 <ChevronLeftIcon className="h-5 w-5" />
               </button>
-              
+
               <h2 className="text-2xl font-bold text-gray-900">
                 {format(currentDate, 'MMMM yyyy')}
               </h2>
-              
+
               <button
                 onClick={() => setCurrentDate(addMonths(currentDate, 1))}
                 className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
               >
                 <ChevronRightIcon className="h-5 w-5" />
               </button>
-              
+
               <button
                 onClick={() => setCurrentDate(new Date())}
                 className="px-3 py-1.5 bg-indigo-100 text-indigo-700 rounded-lg font-medium hover:bg-indigo-200 transition-colors"
               >
                 Today
               </button>
-              
+
               {/* Event count indicator */}
               <div className="px-3 py-1.5 bg-purple-100 text-purple-700 rounded-lg text-sm font-medium">
                 {getFilteredEvents().length} events
               </div>
             </div>
-            
+
             <div className="flex items-center gap-3">
               {/* Search */}
               <div className="relative">
@@ -659,7 +659,7 @@ export default function RevolutionaryCalendar() {
                   className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                 />
               </div>
-              
+
               {/* View Mode Selector */}
               <div className="flex items-center bg-gray-100 rounded-lg p-1">
                 {Object.entries(VIEW_MODES).map(([mode, config]) => (
@@ -667,8 +667,8 @@ export default function RevolutionaryCalendar() {
                     key={mode}
                     onClick={() => setViewMode(mode)}
                     className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
-                      viewMode === mode 
-                        ? 'bg-white text-gray-900 shadow-sm' 
+                      viewMode === mode
+                        ? 'bg-white text-gray-900 shadow-sm'
                         : 'text-gray-600 hover:text-gray-900'
                     }`}
                   >
@@ -677,19 +677,19 @@ export default function RevolutionaryCalendar() {
                   </button>
                 ))}
               </div>
-              
+
               {/* AI Suggestions Toggle */}
               <button
                 onClick={() => setShowAISuggestions(!showAISuggestions)}
                 className={`p-2 rounded-lg transition-colors ${
-                  showAISuggestions 
-                    ? 'bg-purple-100 text-purple-700' 
+                  showAISuggestions
+                    ? 'bg-purple-100 text-purple-700'
                     : 'hover:bg-gray-100 text-gray-700'
                 }`}
               >
                 <SparklesIcon className="h-5 w-5" />
               </button>
-              
+
               {/* Fullscreen Toggle */}
               <button
                 onClick={() => setIsFullscreen(!isFullscreen)}
@@ -701,7 +701,7 @@ export default function RevolutionaryCalendar() {
                   <ArrowsPointingOutIcon className="h-5 w-5" />
                 )}
               </button>
-              
+
               {/* Create Event */}
               <button
                 onClick={() => navigate('/events/create')}
@@ -712,7 +712,7 @@ export default function RevolutionaryCalendar() {
               </button>
             </div>
           </div>
-          
+
           {/* Filter Pills */}
           <div className="flex items-center gap-3">
             <span className="text-sm text-gray-500">Filter:</span>
@@ -731,7 +731,7 @@ export default function RevolutionaryCalendar() {
             ))}
           </div>
         </div>
-        
+
         {/* AI Suggestions Panel */}
         {showAISuggestions && (
           <div className="bg-gradient-to-r from-purple-100 to-pink-100 rounded-2xl p-6 mb-6">
@@ -758,7 +758,7 @@ export default function RevolutionaryCalendar() {
             </div>
           </div>
         )}
-        
+
         {/* Calendar View */}
         <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg overflow-hidden">
           {/* No events message */}
@@ -776,7 +776,7 @@ export default function RevolutionaryCalendar() {
               </button>
             </div>
           )}
-          
+
           {/* Calendar views */}
           {events.length > 0 && viewMode === '3D' && (
             <div className="p-4">
@@ -800,7 +800,7 @@ export default function RevolutionaryCalendar() {
                     Reset
                   </button>
                 </div>
-                
+
                 <div className="flex items-center gap-3">
                   <label className="flex items-center gap-2">
                     <input
@@ -813,19 +813,19 @@ export default function RevolutionaryCalendar() {
                   </label>
                 </div>
               </div>
-              
+
               {render3DView()}
-              
+
               <div className="text-center text-sm text-gray-500 mt-4">
                 Click and drag to rotate • Scroll to zoom • Click a date to select
               </div>
             </div>
           )}
-          
+
           {events.length > 0 && viewMode === 'timeline' && renderTimelineView()}
           {events.length > 0 && viewMode === 'heatmap' && renderHeatmapView()}
           {events.length > 0 && viewMode === 'year' && renderYearView()}
-          
+
           {events.length > 0 && viewMode === 'month' && (
             <div className="p-6">
               <div className="grid grid-cols-7 gap-4">
@@ -834,17 +834,17 @@ export default function RevolutionaryCalendar() {
                     {day}
                   </div>
                 ))}
-                
+
                 {monthDays().map(day => {
                   const dayEvents = getEventsForDate(day);
                   const isCurrentMonth = isSameMonth(day, currentDate);
-                  
+
                   return (
                     <div
                       key={day.toString()}
                       className={`min-h-[120px] p-3 rounded-lg border-2 ${
                         isCurrentMonth ? 'bg-white border-gray-200' : 'bg-gray-50 border-gray-100'
-                      } ${isToday(day) ? 'border-indigo-500 ring-2 ring-indigo-200' : ''} 
+                      } ${isToday(day) ? 'border-indigo-500 ring-2 ring-indigo-200' : ''}
                       hover:shadow-lg transition-all cursor-pointer`}
                       onClick={() => setSelectedDate(day)}
                     >
@@ -860,7 +860,7 @@ export default function RevolutionaryCalendar() {
                           </span>
                         )}
                       </div>
-                      
+
                       <div className="space-y-1">
                         {dayEvents.slice(0, 3).map(event => (
                           <div
@@ -877,7 +877,7 @@ export default function RevolutionaryCalendar() {
                             {format(new Date(event.start_time), 'h:mm a')} - {event.title}
                           </div>
                         ))}
-                        
+
                         {dayEvents.length > 3 && (
                           <div className="text-xs text-gray-500 font-medium text-center">
                             +{dayEvents.length - 3} more
@@ -890,7 +890,7 @@ export default function RevolutionaryCalendar() {
               </div>
             </div>
           )}
-          
+
           {events.length > 0 && viewMode === 'week' && (
             <div className="p-6">
               <div className="grid grid-cols-7 gap-4">
@@ -899,7 +899,7 @@ export default function RevolutionaryCalendar() {
                   end: endOfWeek(currentDate)
                 }).map(day => {
                   const dayEvents = getEventsForDate(day);
-                  
+
                   return (
                     <div key={day.toString()} className="min-h-[400px]">
                       <div className={`text-center p-3 rounded-t-lg ${
@@ -912,7 +912,7 @@ export default function RevolutionaryCalendar() {
                           {format(day, 'd')}
                         </div>
                       </div>
-                      
+
                       <div className="bg-white border-2 border-t-0 border-gray-200 rounded-b-lg p-3 space-y-2">
                         {dayEvents.map(event => (
                           <div
@@ -931,7 +931,7 @@ export default function RevolutionaryCalendar() {
                             </div>
                           </div>
                         ))}
-                        
+
                         <button
                           onClick={() => navigate(`/events/create?date=${format(day, 'yyyy-MM-dd')}`)}
                           className="w-full p-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-indigo-500 hover:text-indigo-600 transition-colors text-sm"
@@ -946,7 +946,7 @@ export default function RevolutionaryCalendar() {
             </div>
           )}
         </div>
-        
+
         {/* Event Details Modal */}
         {showEventDetails && selectedEvent && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
@@ -963,33 +963,33 @@ export default function RevolutionaryCalendar() {
                   <XMarkIcon className="h-5 w-5" />
                 </button>
               </div>
-              
+
               <div className="space-y-3">
                 <div className="flex items-center gap-3 text-gray-600">
                   <CalendarDaysIcon className="h-5 w-5" />
                   <span>{format(new Date(selectedEvent.start_time), 'MMMM d, yyyy')}</span>
                 </div>
-                
+
                 <div className="flex items-center gap-3 text-gray-600">
                   <ClockIcon className="h-5 w-5" />
                   <span>
-                    {format(new Date(selectedEvent.start_time), 'h:mm a')} - 
+                    {format(new Date(selectedEvent.start_time), 'h:mm a')} -
                     {format(new Date(selectedEvent.end_time), 'h:mm a')}
                   </span>
                 </div>
-                
+
                 {selectedEvent.location && (
                   <div className="flex items-center gap-3 text-gray-600">
                     <MapPinIcon className="h-5 w-5" />
                     <span>{selectedEvent.location}</span>
                   </div>
                 )}
-                
+
                 {selectedEvent.description && (
                   <p className="text-gray-600 mt-4">{selectedEvent.description}</p>
                 )}
               </div>
-              
+
               <div className="flex gap-3 mt-6">
                 <button
                   onClick={() => navigate(`/events/${selectedEvent.id}`)}
@@ -1008,12 +1008,12 @@ export default function RevolutionaryCalendar() {
           </div>
         )}
       </div>
-      
+
       <style jsx>{`
         .perspective-1000 {
           perspective: 1000px;
         }
-        
+
         .preserve-3d {
           transform-style: preserve-3d;
         }

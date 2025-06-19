@@ -56,7 +56,7 @@ export function useStudents() {
         .single()
 
       if (error) throw error
-      
+
       await fetchStudents()
       toast.success('Student added successfully')
       return { success: true, data }
@@ -78,7 +78,7 @@ export function useStudents() {
         .single()
 
       if (error) throw error
-      
+
       await fetchStudents()
       toast.success('Student updated successfully')
       return { success: true, data }
@@ -98,7 +98,7 @@ export function useStudents() {
         .eq('parent_id', user.id)
 
       if (error) throw error
-      
+
       await fetchStudents()
       toast.success('Student removed successfully')
       return { success: true }
@@ -119,3 +119,5 @@ export function useStudents() {
     removeStudent
   }
 }
+
+

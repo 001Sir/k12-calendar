@@ -103,10 +103,10 @@ describe('useStudents Hook', () => {
       .mockReturnValueOnce({
         insert: vi.fn(() => ({
           select: vi.fn(() => ({
-            single: vi.fn(() => 
-              Promise.resolve({ 
-                data: { ...newStudent, id: 'student-3', parent_id: 'user-123' }, 
-                error: null 
+            single: vi.fn(() =>
+              Promise.resolve({
+                data: { ...newStudent, id: 'student-3', parent_id: 'user-123' },
+                error: null
               })
             ),
           })),
@@ -115,10 +115,10 @@ describe('useStudents Hook', () => {
       .mockReturnValueOnce({
         select: vi.fn(() => ({
           eq: vi.fn(() => ({
-            order: vi.fn(() => 
-              Promise.resolve({ 
-                data: [...mockStudents, { ...newStudent, id: 'student-3', parent_id: 'user-123' }], 
-                error: null 
+            order: vi.fn(() =>
+              Promise.resolve({
+                data: [...mockStudents, { ...newStudent, id: 'student-3', parent_id: 'user-123' }],
+                error: null
               })
             ),
           })),
@@ -159,10 +159,10 @@ describe('useStudents Hook', () => {
           eq: vi.fn(() => ({
             eq: vi.fn(() => ({
               select: vi.fn(() => ({
-                single: vi.fn(() => 
-                  Promise.resolve({ 
-                    data: { ...mockStudents[0], ...updates }, 
-                    error: null 
+                single: vi.fn(() =>
+                  Promise.resolve({
+                    data: { ...mockStudents[0], ...updates },
+                    error: null
                   })
                 ),
               })),
@@ -173,10 +173,10 @@ describe('useStudents Hook', () => {
       .mockReturnValueOnce({
         select: vi.fn(() => ({
           eq: vi.fn(() => ({
-            order: vi.fn(() => 
-              Promise.resolve({ 
-                data: [{ ...mockStudents[0], ...updates }, mockStudents[1]], 
-                error: null 
+            order: vi.fn(() =>
+              Promise.resolve({
+                data: [{ ...mockStudents[0], ...updates }, mockStudents[1]],
+                error: null
               })
             ),
           })),
@@ -220,10 +220,10 @@ describe('useStudents Hook', () => {
       .mockReturnValueOnce({
         select: vi.fn(() => ({
           eq: vi.fn(() => ({
-            order: vi.fn(() => 
-              Promise.resolve({ 
-                data: [mockStudents[1]], 
-                error: null 
+            order: vi.fn(() =>
+              Promise.resolve({
+                data: [mockStudents[1]],
+                error: null
               })
             ),
           })),
@@ -257,3 +257,4 @@ describe('useStudents Hook', () => {
     expect(mockFrom).not.toHaveBeenCalled()
   })
 })
+
